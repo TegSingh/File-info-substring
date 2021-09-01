@@ -7,7 +7,12 @@ import timeit
 bucket_name = "com.ibm.ws.microprofile.config.1.1_fat"
 
 def main():
+    start = timeit.default_timer()
     file_substring()
+    end = timeit.default_timer()
+    printstring = "Execution time: " + str(end - start) + " seconds"
+    print(printstring)
+
     # Test the find_common_substring method
     string1 = "com.ibm.ws"
     string2 = "com.ibm.ws.microprofile.config"
@@ -21,8 +26,8 @@ def file_substring():
             csv_writer = csv.writer(file_writer)
             line_count = 0
             for row in csv_reader:
-                print(row)
-                if line_count < 5000: 
+                # print(row)
+                if line_count < 200000: 
                     if line_count == 0:
                         # Add the column header to the file
                         row.append('Match')
@@ -31,6 +36,7 @@ def file_substring():
                     else: 
                         # Check whether a matching file substring exists
                         file_name = row[0]
+                        # print("Hello1")
                         match = find_substring_match(bucket_name, file_name)
                         row.append(match)
                         csv_writer.writerow(row)
@@ -40,13 +46,10 @@ def file_substring():
     
 # Method to find match with the substring and files
 def find_substring_match(bucket_name, file_name):
-    
     # Intialize the match value to false
     match = False
-    
     # Split string based on /
     split_string = file_name.split('/')
-    
     for i in range(len(split_string)):
         # Give priority to the files that are in dev directory
         if split_string[0] == 'dev':
@@ -60,17 +63,21 @@ def find_common_substring(string1, string2):
     l2 = len(string2)
     j = 0    
     common = ""
+    # print(string1, string2)
     for i in range(l1):
+        # print("BucketName: ", string1[i], "Filename: ", string2[j])
         if i == j:
             if string1[i] == string2[j]:
                 j += 1
+                if j >= len(string2):
+                    break
                 # Add the matching string to the value for common
                 common += string1[i]
             else:
                 break
         else: 
             break   
-    
+
     # If the length of bucket name and file name end up being a perfect match
     if len(common) == len(string1) or len(common) == len(string2):
         return True, common
