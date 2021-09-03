@@ -24,21 +24,22 @@ def file_substring():
         with open('output_file_info.csv', 'w') as file_writer:
             csv_reader = csv.reader(file_data)
             csv_writer = csv.writer(file_writer)
-            line_count = 0
+            line_count = 0    
             for row in csv_reader:
                 # print(row)
                 if line_count < 200000: 
                     if line_count == 0:
                         # Add the column header to the file
                         row.append('Match')
+                        row.append('Matchstring')
                         csv_writer.writerow(row)
                         line_count += 1
                     else: 
                         # Check whether a matching file substring exists
                         file_name = row[0]
-                        # print("Hello1")
-                        match = find_substring_match(bucket_name, file_name)
+                        match, matchstring = find_substring_match(bucket_name, file_name)
                         row.append(match)
+                        row.append(matchstring)
                         csv_writer.writerow(row)
                         line_count += 1
                 else:
@@ -48,14 +49,20 @@ def file_substring():
 def find_substring_match(bucket_name, file_name):
     # Intialize the match value to false
     match = False
+    matchstring = ""
+
     # Split string based on /
     split_string = file_name.split('/')
+    
     for i in range(len(split_string)):
         # Give priority to the files that are in dev directory
         if split_string[0] == 'dev':
             match, matchstring = find_common_substring(bucket_name, split_string[1])
+            if matchstring == "com.ibm.ws.":
+                match = False
+                matchstring = ""
     
-    return match
+    return match, matchstring
 
 # Method to find the longest common substring between 2 substrings (starting at index 0) passed as arguments
 def find_common_substring(string1, string2):
@@ -87,6 +94,5 @@ def find_common_substring(string1, string2):
     else:
         return False, "" 
     
-
 if __name__ == '__main__':
     main()
