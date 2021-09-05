@@ -58,7 +58,7 @@ def find_substring_match(bucket_name, file_name):
         # Give priority to the files that are in dev directory
         if split_string[0] == 'dev':
             match, matchstring = find_common_substring(bucket_name, split_string[1])
-            if matchstring == "com.ibm.ws.":
+            if matchstring == "com.ibm.ws." or matchstring == "com.ibm." or matchstring == "com.":
                 match = False
                 matchstring = ""
     
